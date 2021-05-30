@@ -210,9 +210,9 @@ MessagesStream({Key key, this.search}) : super(key: key);
             colour=Colors.yellowAccent;
           }
           else if( result=='Positive')
-            colour=Colors.green;
-          else
             colour=Colors.red;
+          else
+            colour=Colors.green;
 
 
           final uid = message.data['doctor_uid'];
@@ -397,11 +397,11 @@ class MessageBubble extends StatelessWidget {
                       Text(" ${result}",style:TextStyle(color: colour,fontWeight: FontWeight.bold)),
                     ],
                   ),
-                  Row(
+                  payment ==null?Container(width: 0,height: 0,):Row(
                     children: [
                       Text("Payment:",style:TextStyle(color: CupertinoColors.white)),
 
-                      Text(" ${payment}",style:TextStyle(color: p_colour,fontWeight: FontWeight.bold)),
+                      Text(" ${payment}",style:TextStyle(color:payment=='Paid'?Colors.green:Colors.red,fontWeight: FontWeight.bold)),
                     ],
                   ),
 

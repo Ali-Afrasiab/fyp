@@ -93,7 +93,7 @@ class nav_drawer extends StatelessWidget {
                 leading: Icon(Icons.settings),
                 title: Text('Settings'),
                 onTap: () => {
-                  print('sender : $sender'),
+                //  print('sender : $sender'),
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -133,7 +133,7 @@ class nav_drawer extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ChangePassword(),
+                      builder: (context) => ChangePassword(sender: sender,),
                     ),
                   );
                 },

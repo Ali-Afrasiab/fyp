@@ -24,6 +24,7 @@ final pic;
   Widget build(BuildContext context) {
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar:
       new PreferredSize(
 
@@ -105,6 +106,7 @@ class MessagesStream extends StatelessWidget {
   String date;
   Color colour;
 String patient;
+String comments;
 
   @override
   Widget build(BuildContext context) {
@@ -192,10 +194,12 @@ print('');
                 result="pending";
                 colour =Colors.yellowAccent;
               }
-              if(result=="Negative") {
+             else if(result=="Negative") {
                 colour= Colors.green ;
               }
-              if(result=="Positive")colour= CupertinoColors.destructiveRed;
+           else if(result=="Positive")
+                colour= CupertinoColors.destructiveRed;
+
 
 
 
@@ -359,6 +363,65 @@ print('');
                       ),
 
                     ),
+                    RaisedButton(
+                      color: Colors.transparent,
+                      onPressed: (){
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                backgroundColor:Color(0xFF202125),
+                                title: Text('Kindly add your comments.',style: TextStyle(color: CupertinoColors.white),),
+                                content: Container(
+
+                                  child: TextField(
+                                    onChanged: (value)=>comments=value,
+                                    style: TextStyle(color: CupertinoColors.white),
+                                    decoration: InputDecoration(
+                                      fillColor: CupertinoColors.white
+                                    ),
+                                  )
+                                ),
+                                actions: [
+                                  Center(
+                                    child: TextButton(
+                                      onPressed: () {
+                                        Firestore.instance
+                                            .collection('patient')
+                                            .document(doc_id)
+                                            .updateData({
+                                          "comments":comments
+                                        });
+                                        Navigator.of(context).pop(true);
+                                      },
+                                      child: Text('Done'),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            });
+                      },
+                      child: Card(elevation: 10,
+                        color: Color(0XFF3E3F43),
+
+
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
+
+                        child: Padding(
+                          padding:  EdgeInsets.all(15.0),
+                          child: Container(
+                            width: 350,
+
+                            child: Text(
+                             comments==null ?'Tap to add comments':comments,style: TextStyle(color: CupertinoColors.white),maxLines: 5,
+                            ),
+                          ),
+                        ),
+
+                      ),
+                    ),
 
                     Container(
                       child: RaisedButton(
@@ -367,13 +430,13 @@ print('');
                           shape: new RoundedRectangleBorder(
                               borderRadius: new BorderRadius.circular(30.0)),
                           onPressed: () {
-
-
-                            /*   Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context)),
-                        );*/
+                        //
+                        //
+                        //     /*   Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //       builder: (context)),
+                        // );*/
 
                           },
                           child: Text("Send Report", style: TextStyle(color: CupertinoColors.white))),

@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_animations/loading_animations.dart';
 import 'package:remedium/consultation.dart';
 import 'package:remedium/covid.dart';
 import 'package:remedium/doctor_inventory.dart';
@@ -14,6 +15,7 @@ import 'package:remedium/report_generate.dart';
 import 'doctor_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:keyboard_visibility/keyboard_visibility.dart';
 
 final DateTime now = DateTime.now();
 final DateFormat formatter = DateFormat('yyyy-MM-dd');
@@ -23,6 +25,8 @@ FirebaseStorage _storage = FirebaseStorage.instance;
 final _firestore = Firestore.instance;
 
 FirebaseUser loggedInUser;
+
+bool loading=false;
 
 class doctor_profile extends StatefulWidget {
   final doc_id;
@@ -94,12 +98,17 @@ class _doctor_profileState extends State<doctor_profile> {
         preferredSize: new Size(MediaQuery.of(context).size.width, 50.0),
       ),
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            MessagesStream(doc_id: doc_id),
-          ],
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF202125),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              MessagesStream(doc_id: doc_id),
+            ],
+          ),
         ),
       ),
     );
@@ -139,6 +148,9 @@ class MessagesStream extends StatelessWidget {
   String patient_image;
   String patient_id;
   String symptoms;
+
+
+  bool loading=false;
 
   @override
   Widget build(BuildContext context) {
@@ -202,493 +214,538 @@ class MessagesStream extends StatelessWidget {
               patient_id = message.data['patient_id'];
             }
 
-            return Expanded(
-                child: Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFF202125),
-              ),
-              child: Column(
-                children: [
-                  Center(
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Card(
-                          color: Color(0XFF3E3F43),
-                          elevation: 10,
-                          //shadowColor: Colors.blue,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25.0),
-                          ),
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: CircularProfileAvatar(
-                                  image==null?'':image,
-                                  borderColor: Colors.blueGrey,
-                                  borderWidth: 2,
-                                  elevation: 5,
-                                  radius: 80,
-                                  cacheImage: true,
-                                ),
-                              ),
-                              Expanded(
-                                child: Card(
-                                  color: Color(0XFF3E3F43),
-                                  // elevation: 50,
+            return Stack(
+              children: [
+                Expanded(
+                    child: Container(
 
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            "Name : ",
-                                            style: TextStyle(
-                                                color: Colors.white70),
-                                          ),
-                                          Text(
-                                            "${first_name} ${last_name}",
-                                            style: TextStyle(
-                                                color: CupertinoColors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            "Gender : ",
-                                            style: TextStyle(
-                                                color: Colors.white70),
-                                          ),
-                                          Text(
-                                            "${gender}",
-                                            style: TextStyle(
-                                                color: CupertinoColors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            "Age : ",
-                                            style: TextStyle(
-                                                color: Colors.white70),
-                                          ),
-                                          Text(
-                                            "${age}",
-                                            style: TextStyle(
-                                                color: CupertinoColors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 30,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(5),
-                          child: Card(
-                            color: Color(0XFF3E3F43),
-                            elevation: 10,
-
-                            //shadowColor: Colors.blue,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25.0),
-                            ),
-                            child: //add to favourite
-                                Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                fav_card(
-                                    doc_id: fav_id, patient_id: patient_id),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                          child: Card(
-                            color: Color(0XFF3E3F43),
-                            elevation: 10,
-
-                            //shadowColor: Colors.blue,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25.0),
-                            ),
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(30.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            "Email : ",
-                                            style: TextStyle(
-                                                color: Colors.white70),
-                                          ),
-                                          Text(
-                                            "${email}",
-                                            style: TextStyle(
-                                                color: CupertinoColors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            "Phone : ",
-                                            style: TextStyle(
-                                                color: Colors.white70),
-                                          ),
-                                          Text(
-                                            "${telephone}",
-                                            style: TextStyle(
-                                                color: CupertinoColors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            "Experience : ",
-                                            style: TextStyle(
-                                                color: Colors.white70),
-                                          ),
-                                          Text(
-                                            "${experience}",
-                                            style: TextStyle(
-                                                color: CupertinoColors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            "Degree : ",
-                                            style: TextStyle(
-                                                color: Colors.white70),
-                                          ),
-                                          Text(
-                                            "${degree}",
-                                            style: TextStyle(
-                                                color: CupertinoColors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Column(
-                          children: [
-                            Text(
-                              "Description: ",
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: CupertinoColors.white),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                          child: Card(
-                            color: Color(0XFF3E3F43),
-                            elevation: 10,
-
-                            //shadowColor: Colors.blue,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Text("${description}",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      color: CupertinoColors.white)),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 30,
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text("STATUS: ",
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        color: CupertinoColors.white)),
-                                Text("Available",
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        color: CupertinoColors.white)),
-                              ],
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF202125),
                   ),
-                  FloatingActionButton.extended(
-                    backgroundColor: Color(0XFF3C4043),
-                    focusColor: Colors.blue,
-                    focusElevation: 100,
-                    splashColor: CupertinoColors.white,
-                    onPressed: () async {
-                      try {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                backgroundColor: Color(0XFF3E3F43),
+                  child: Column(
+                    children: [
+                      Center(
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Card(
+                              color: Color(0XFF3E3F43),
+                              elevation: 10,
+                              //shadowColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25.0),
+                              ),
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(20.0),
+                                    child: CircularProfileAvatar(
+                                      image==null?'':image,
+                                      borderColor: Colors.blueGrey,
+                                      borderWidth: 2,
+                                      elevation: 5,
+                                      radius: 80,
+                                      cacheImage: true,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Card(
+                                      color: Color(0XFF3E3F43),
+                                      // elevation: 50,
+
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "Name : ",
+                                                style: TextStyle(
+                                                    color: Colors.white70),
+                                              ),
+                                              Text(
+                                                "${first_name} ${last_name}",
+                                                style: TextStyle(
+                                                    color: CupertinoColors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "Gender : ",
+                                                style: TextStyle(
+                                                    color: Colors.white70),
+                                              ),
+                                              Text(
+                                                "${gender}",
+                                                style: TextStyle(
+                                                    color: CupertinoColors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "Age : ",
+                                                style: TextStyle(
+                                                    color: Colors.white70),
+                                              ),
+                                              Text(
+                                                "${age}",
+                                                style: TextStyle(
+                                                    color: CupertinoColors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(5),
+                              child: Card(
+                                color: Color(0XFF3E3F43),
                                 elevation: 10,
 
                                 //shadowColor: Colors.blue,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(25.0),
                                 ),
-                                title: Text('Confirm your details'),
-                                content: Expanded(
-                                  child: Container(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              "First Name : ",
-                                              style: TextStyle(),
-                                            ),
-                                            // Text("${email}",style:TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
-                                            Container(
-                                              width: 150,
-                                              child: TextField(
-                                                onChanged: (value) =>
-                                                    first_name = value,
-                                                decoration: InputDecoration(
-                                                    hintText: '$first_name'),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              "Last Name : ",
-                                              style: TextStyle(),
-                                            ),
-                                            // Text("${email}",style:TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
-                                            Container(
-                                              width: 150,
-                                              child: TextField(
-                                                onChanged: (value) =>
-                                                    last_name = value,
-                                                decoration: InputDecoration(
-                                                    hintText: '$last_name'),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              "Email : ",
-                                              style: TextStyle(),
-                                            ),
-                                            // Text("${email}",style:TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
-                                            Container(
-                                              width: 150,
-                                              child: TextField(
-                                                onChanged: (value) =>
-                                                    email = value,
-                                                decoration: InputDecoration(
-                                                    hintText: '$email'),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              "Phone : ",
-                                              style: TextStyle(),
-                                            ),
-                                            // Text("${email}",style:TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
-                                            Container(
-                                              width: 150,
-                                              child: TextField(
-                                                onChanged: (value) =>
-                                                    telephone = value,
-                                                decoration: InputDecoration(
-                                                    hintText: '$telephone'),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              "Symptoms : ",
-                                              style: TextStyle(),
-                                            ),
-                                            // Text("${email}",style:TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
-                                            Container(
-                                              width: 150,
-                                              child: TextField(
-                                                onChanged: (value) =>
-                                                    symptoms = value,
-                                                decoration: InputDecoration(
-                                                    hintText: 'Symptoms'),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        add_pic()
-                                      ],
-                                    ),
-                                  ),
+                                child: //add to favourite
+                                    Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    fav_card(
+                                        doc_id: fav_id, patient_id: patient_id),
+                                  ],
                                 ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                              child: Card(
+                                color: Color(0XFF3E3F43),
+                                elevation: 10,
 
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop(true);
-                                    },
-                                    child: Text('Cancel'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () async {
-                                      StorageReference reference = _storage
-                                          .ref()
-                                          .child("doctor_profile/${email}");
-
-                                      //Upload the file to firebase
-                                      StorageUploadTask uploadTask =
-                                          reference.putFile(_image);
-                                      String docUrl =
-                                          await (await uploadTask.onComplete)
-                                              .ref
-                                              .getDownloadURL();
-                                      _firestore
-                                          .collection('consultation')
-                                          .document(doc_id)
-                                          .setData({
-                                        'first_name': first_name,
-                                        'email': email,
-                                        'last_name': last_name,
-                                        'age': age,
-                                        'gender': gender,
-                                        'degree': degree,
-                                        'telephone': telephone,
-                                        'request': "awaiting",
-                                        'experience': experience,
-                                        'description': description,
-                                        'image': image,
-                                        'doctor_doc_id': doc_id,
-                                        'patient_id': patient_id,
-                                        'patient_first_name':
-                                            patient_first_name,
-                                        'patient_email': patient_email,
-                                        'patient_last_name': patient_last_name,
-                                        'patient_age': patient_age,
-                                        'patient_gender': patient_gender,
-                                        'patient_telephone': patient_telephone,
-                                        'request': "awaiting",
-                                        'patient_image': patient_image,
-                                        'date': formatted,
-                                        'symptoms': symptoms,
-                                        'x-ray': docUrl,
-                                        'patient_result': 'pending',
-                                        'payment':'Not Paid',
-                                      });
-
-                                      AlertDialog(
-                                        backgroundColor: Color(0XFF3E3F43),
-                                        elevation: 10,
-
-                                        //shadowColor: Colors.blue,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(25.0),
-                                        ),
-                                        title:
-                                            Text('Your request has been sent!'),
-
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop(true);
-                                            },
-                                            child: Text('Ok'),
+                                //shadowColor: Colors.blue,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25.0),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(30.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "Email : ",
+                                                style: TextStyle(
+                                                    color: Colors.white70),
+                                              ),
+                                              Text(
+                                                "${email}",
+                                                style: TextStyle(
+                                                    color: CupertinoColors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "Phone : ",
+                                                style: TextStyle(
+                                                    color: Colors.white70),
+                                              ),
+                                              Text(
+                                                "${telephone}",
+                                                style: TextStyle(
+                                                    color: CupertinoColors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "Experience : ",
+                                                style: TextStyle(
+                                                    color: Colors.white70),
+                                              ),
+                                              Text(
+                                                "${experience}",
+                                                style: TextStyle(
+                                                    color: CupertinoColors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "Degree : ",
+                                                style: TextStyle(
+                                                    color: Colors.white70),
+                                              ),
+                                              Text(
+                                                "${degree}",
+                                                style: TextStyle(
+                                                    color: CupertinoColors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18),
+                                              ),
+                                            ],
                                           ),
                                         ],
-                                      );
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                patient_inventory()),
-                                      );
-                                    },
-                                    child: Text('OK'),
-                                  ),
-                                ],
-                              );
-                            });
-                      } catch (e) {
-                        print(e);
-                      }
-                    },
-                    label: Text('Send Request'),
-                    icon: Icon(Icons.add),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  "Description: ",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: CupertinoColors.white),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                              child: Card(
+                                color: Color(0XFF3E3F43),
+                                elevation: 10,
+
+                                //shadowColor: Colors.blue,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Text("${description}",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          color: CupertinoColors.white)),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text("STATUS: ",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            color: CupertinoColors.white)),
+                                    Text("Available",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            color: CupertinoColors.white)),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      FloatingActionButton.extended(
+                        backgroundColor: Color(0XFF3C4043),
+                        focusColor: Colors.blue,
+                        focusElevation: 100,
+                        splashColor: CupertinoColors.white,
+                        onPressed: () async {
+                          try {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    backgroundColor: Color(0XFF3E3F43),
+                                    elevation: 10,
+
+                                    //shadowColor: Colors.blue,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(25.0),
+                                    ),
+                                    title: Text('Confirm your details'),
+                                    content: Expanded(
+                                      child: Container(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  "First Name : ",
+                                                  style: TextStyle(),
+                                                ),
+                                                // Text("${email}",style:TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                                                Container(
+                                                  width: 150,
+                                                  child: TextField(style: TextStyle(color: CupertinoColors.white),
+                                                    onChanged: (value) =>
+                                                        first_name = value,
+                                                    decoration: InputDecoration(
+                                                        hintText: '$first_name'),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  "Last Name : ",
+                                                  style: TextStyle(),
+                                                ),
+                                                // Text("${email}",style:TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                                                Container(
+                                                  width: 150,
+                                                  child: TextField(style: TextStyle(color: CupertinoColors.white),
+                                                    onChanged: (value) =>
+                                                        last_name = value,
+                                                    decoration: InputDecoration(
+                                                        hintText: '$last_name'),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  "Email : ",
+                                                  style: TextStyle(),
+                                                ),
+                                                // Text("${email}",style:TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                                                Container(
+                                                  width: 150,
+                                                  child: TextField(style: TextStyle(color: CupertinoColors.white),
+                                                    onChanged: (value) =>
+                                                        email = value,
+                                                    decoration: InputDecoration(
+                                                        hintText: '$email'),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  "Phone : ",
+                                                  style: TextStyle(),
+                                                ),
+                                                // Text("${email}",style:TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                                                Container(
+                                                  width: 150,
+                                                  child: TextField(style: TextStyle(color: CupertinoColors.white),
+                                                    onChanged: (value) =>
+                                                        telephone = value,
+                                                    decoration: InputDecoration(
+                                                        hintText: '$telephone'),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    "Symptoms : ",
+                                                    style: TextStyle(),
+                                                  ),
+                                                  // Text("${email}",style:TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                                                  Container(
+                                                    width: 150,
+
+                                                    child: TextField(
+                                                      maxLines: 5,
+                                                      onChanged: (value) =>
+                                                          symptoms = value,
+                                                      style: TextStyle(color: CupertinoColors.white),
+                                                      decoration: InputDecoration(
+
+                                                          hintText: 'Symptoms'),
+
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                        add_pic()
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop(true);
+                                        },
+                                        child: Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () async {
+
+                                          StorageReference reference = _storage
+                                              .ref()
+                                              .child("doctor_profile/${email}");
+
+                                          //Upload the file to firebase
+                                          StorageUploadTask uploadTask =
+                                              reference.putFile(_image);
+                                          String docUrl =
+                                              await (await uploadTask.onComplete)
+                                                  .ref
+                                                  .getDownloadURL();
+                                          _firestore
+                                              .collection('consultation')
+                                              .document(doc_id)
+                                              .setData({
+                                            'first_name': first_name,
+                                            'email': email,
+                                            'last_name': last_name,
+                                            'age': age,
+                                            'gender': gender,
+                                            'degree': degree,
+                                            'telephone': telephone,
+                                            'request': "awaiting",
+                                            'experience': experience,
+                                            'description': description,
+                                            'image': image,
+                                            'doctor_doc_id': doc_id,
+                                            'patient_id': patient_id,
+                                            'patient_first_name':
+                                                patient_first_name,
+                                            'patient_email': patient_email,
+                                            'patient_last_name': patient_last_name,
+                                            'patient_age': patient_age,
+                                            'patient_gender': patient_gender,
+                                            'patient_telephone': patient_telephone,
+                                            'request': "awaiting",
+                                            'patient_image': patient_image,
+                                            'date': formatted,
+                                            'symptoms': symptoms,
+                                            'x-ray': docUrl,
+                                            'patient_result': 'pending',
+                                            'payment':'Not Paid',
+                                          });
+
+                                          AlertDialog(
+                                            backgroundColor: Color(0XFF3E3F43),
+                                            elevation: 10,
+
+                                            //shadowColor: Colors.blue,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(25.0),
+                                            ),
+                                            title:
+                                                Text('Your request has been sent!'),
+
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop(true);
+                                                },
+                                                child: Text('Ok'),
+                                              ),
+                                            ],
+                                          );
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    patient_inventory()),
+                                          );
+                                        },
+                                        child: Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                });
+                          } catch (e) {
+
+                            print(e);
+                          }
+                        },
+                        label: Text('Send Request'),
+                        icon: Icon(Icons.add),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ));
+                ),
+                ),
+                loading== true?Center(
+                  child: Expanded(
+                    child: Container(
+                      decoration: new BoxDecoration(
+                          color: Colors.black.withOpacity(0.5)
+                      ),
+                      width: double.infinity,
+                      height: double.infinity,
+                      child: LoadingBouncingGrid.square(
+                        borderColor: Colors.lightBlue,
+                        borderSize: 3.0,
+                        size: 70.0,
+                        backgroundColor: Colors.blue,
+                        duration: Duration(milliseconds: 500),
+                      ),
+                    ),
+                  ),
+                ):Container(width: 0,height: 0,)
+              ],
+            );
           },
         );
       },
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
 
 File _image;
 
@@ -857,6 +914,9 @@ class add_pic extends StatefulWidget {
 }
 
 class _add_picState extends State<add_pic> {
+  bool keyboard=false;
+
+
   _imgFromCamera() async {
     File image = await ImagePicker.pickImage(
         source: ImageSource.camera, imageQuality: 50);
@@ -907,6 +967,13 @@ class _add_picState extends State<add_pic> {
 
   @override
   Widget build(BuildContext context) {
+
+    KeyboardVisibilityNotification().addNewListener(
+      onChange: (bool visible) {
+        print('visibility $visible');
+      },
+    );
+
     return Padding(
       padding: EdgeInsets.only(top: 20.0),
       child: Row(

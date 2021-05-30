@@ -4,6 +4,7 @@ import 'dart:convert';
 //import 'package:firebase_core/firebase_core.dart';
 import 'package:remedium/patient_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:remedium/selfdiagnosis.dart';
 //import 'consultation.dart';
 import 'doctor_sign_in.dart';
 import 'jarvis.dart';
@@ -185,6 +186,29 @@ class _MyHomePageState extends State<MyHomePage> {
                         },
 
                         child: Text("Chatbot",style:TextStyle(color: Colors.white))),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    RaisedButton(
+                        color: Color(0xFF3C4043),
+                        padding: EdgeInsets.fromLTRB(40, 20, 40, 20),
+                        shape:  new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+                        onPressed:() async{
+                        // final res = await http.get("http://192.168.10.2/127.0.0.1:5000/");
+                        // final decoded = json.decode(res.body) as Map <String, dynamic>;
+                        //
+                        //   setState(() {
+                        //     greetings = decoded['greetings'];
+                        //   });
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => selfdiagnosis()),
+                        );
+
+
+                        },
+
+                        child: Text('Symtomatic Diagnosis',style:TextStyle(color: Colors.white))),
 
 
                   ],

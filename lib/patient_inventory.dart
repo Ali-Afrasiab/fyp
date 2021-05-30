@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:remedium/create_patient.dart';
+import 'package:remedium/jazz_cash.dart';
 import 'package:remedium/nav_drawer.dart';
 import 'package:remedium/patient_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -43,6 +44,7 @@ class _doctor_inventoryState extends State<patient_inventory> {
       print(e);
     }
   }
+  String search='';
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
@@ -67,45 +69,50 @@ class _doctor_inventoryState extends State<patient_inventory> {
                 SizedBox(
                   width: 5,
                 ),
-                RaisedButton(
-                  shape: new RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(80.0)),
-                  onPressed: () {},
-                  color: Color(0xFF3C4043),
-                  padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                  child: Row(
-                    children: [
-                      Text("Search for docters with name",
-                          style: TextStyle(
-                            color: Color(0XFFDCDDE1),
-                          )),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Icon(
-                        Icons.search,
-                        color: CupertinoColors.white,
-                      )
-                    ],
-                  ),
-                ),
-
                 Expanded(
                   child: Padding(
                     padding:  EdgeInsets.all(8.0),
-                    child: RaisedButton(
-                      color: Color(0xFF3C4043),
-                      shape: new RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(70.0)),
-                      onPressed: () {},
-                      padding: EdgeInsets.fromLTRB(1, 10, 1, 10),
-                      child: Icon(
-                        Icons.filter_alt_outlined,
+                    child: Container(
+
+                      decoration: BoxDecoration(
                         color: CupertinoColors.white,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: TextField(
+                        onChanged: (value){setState(() {
+                        search=value;
+                        });},
+                        decoration: InputDecoration(
+                            fillColor: CupertinoColors.white,
+                            prefixIcon: Icon(
+                              Icons.search
+                            ),
+                            border: OutlineInputBorder(
+                            ),
+                            hintText: 'Search Report by Doctor',
+
+                        ),
                       ),
                     ),
                   ),
                 ),
+
+                // Expanded(
+                //   child: Padding(
+                //     padding:  EdgeInsets.all(8.0),
+                //     child: RaisedButton(
+                //       color: Color(0xFF3C4043),
+                //       shape: new RoundedRectangleBorder(
+                //           borderRadius: new BorderRadius.circular(70.0)),
+                //       onPressed: () {},
+                //       padding: EdgeInsets.fromLTRB(1, 10, 1, 10),
+                //       child: Icon(
+                //         Icons.filter_alt_outlined,
+                //         color: CupertinoColors.white,
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -130,7 +137,7 @@ class _doctor_inventoryState extends State<patient_inventory> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              MessagesStream(),
+              search.isNotEmpty?MessagesStream(search: search,):MessagesStream(),
             ],
           ),
         ),
@@ -154,6 +161,9 @@ class _doctor_inventoryState extends State<patient_inventory> {
 }
 
 class MessagesStream extends StatelessWidget {
+  final search;
+
+  const MessagesStream({Key key, this.search}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -170,8 +180,8 @@ class MessagesStream extends StatelessWidget {
         List<MessageBubble> messageBubbles = [];
 
         for (var message in messages) {
-          final first_name = message.data['first_name'];
-          final last_name = message.data['last_name'];
+          String first_name = message.data['first_name'];
+          String last_name = message.data['last_name'];
           final experience = message.data['experience'];
           final degree = message.data['degree'];
           final email = message.data['email'];
@@ -208,7 +218,15 @@ class MessagesStream extends StatelessWidget {
           else
             r_colour==Colors.red;
 
-          if (currentUser == uid) {
+          if(first_name==null)
+            first_name='';
+          if(last_name==null)
+            last_name='';
+
+          String name =
+              first_name.toLowerCase() + ' ' + last_name.toLowerCase();
+
+          if (currentUser == uid && search==null) {
             final messageBubble = MessageBubble(
                 first_name: first_name,
                 last_name: last_name,
@@ -228,6 +246,27 @@ class MessagesStream extends StatelessWidget {
 
             messageBubbles.add(messageBubble);
           }
+         else if (currentUser == uid && name.contains(search.toLowerCase())) {
+            final messageBubble = MessageBubble(
+              first_name: first_name,
+              last_name: last_name,
+              experience: experience,
+              degree: degree,
+              email: email,
+              image: image,
+              request:request,
+              result: result,
+              colour: colour,
+              doc_id: message.documentID,
+              payment: payment,
+              r_colour: r_colour,
+              p_colour: p_colour,
+
+            );
+
+            messageBubbles.add(messageBubble);
+          }
+
         }
         return Expanded(
           child: ListView(
@@ -261,61 +300,95 @@ final r_colour;
   Widget build(BuildContext context) {
     return FlatButton(
       onPressed: () {
+
         print('doc_id in recieved: $doc_id');
-        if(result!='pending')
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => recieved_result(doc_id: doc_id,)),
-        );
+
+        if(request=='accepted')
+          {
+            if(result!='pending' && payment=='Paid')
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => recieved_result(doc_id: doc_id,)),
+              );
+            else
+              showDialog(context: context, builder: (context) {return
+                payment=='Paid'? AlertDialog(
+                  backgroundColor:
+                  Color(0xFF202125),
+                  elevation: 10,
+
+                  //shadowColor: Colors.blue,
+
+                  title: Center(child: Text('Result is Pending!\nTry again later.',style: TextStyle(color: CupertinoColors.white),)),
+
+                  actions: [
+
+                    TextButton(
+
+                      onPressed: () {Navigator.of(context).pop(true);
+                      },
+                      child: Text('Ok',style: TextStyle(color: CupertinoColors.white)),
+                    ),
+
+                  ],
+                ):AlertDialog(
+                  backgroundColor:
+                  Color(0xFF202125),
+                  elevation: 10,
+
+                  //shadowColor: Colors.blue,
+
+                  title: Center(child: Text('Payment is Pending!\nPay to view.',style: TextStyle(color: CupertinoColors.white),)),
+
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+
+                        Navigator.of(context).pop(true);
+                      },
+                      child: Text('Pay Later',style: TextStyle(color: CupertinoColors.white)),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => jazz_cash(doc_id: doc_id,)),
+                        );
+                      },
+                      child: Text('Pay Now',style: TextStyle(color: Colors.green)),
+                    ),
+
+                  ],
+                );
+              });
+
+
+
+          }
         else
-        showDialog(context: context, builder: (context) {return
-         payment=='Paid'? AlertDialog(
-                backgroundColor:
-                Color(0xFF202125),
-                elevation: 10,
+          AlertDialog(
+            backgroundColor:
+            Color(0xFF202125),
+            elevation: 10,
 
-                //shadowColor: Colors.blue,
+            //shadowColor: Colors.blue,
 
-                title: Center(child: Text('Result is Pending!\nTry again later.',style: TextStyle(color: CupertinoColors.white),)),
+            title: Center(child: Text('Request is pending.',style: TextStyle(color: CupertinoColors.white),)),
 
-                actions: [
+            actions: [
+              TextButton(
+                onPressed: () {
 
-                  TextButton(
-                    onPressed: () {Navigator.of(context).pop(true);
-                    },
-                    child: Text('Ok',style: TextStyle(color: CupertinoColors.white)),
-                  ),
-
-                ],
-              ):AlertDialog(
-           backgroundColor:
-           Color(0xFF202125),
-           elevation: 10,
-
-           //shadowColor: Colors.blue,
-
-           title: Center(child: Text('Payment is Pending!\nPay to view.',style: TextStyle(color: CupertinoColors.white),)),
-
-           actions: [
-             TextButton(
-               onPressed: () {Navigator.of(context).pop(true);
-               },
-               child: Text('Pay Later',style: TextStyle(color: CupertinoColors.white)),
-             ),
-             TextButton(
-               onPressed: () {
-                 Navigator.of(context).pop(true);
-               },
-               child: Text('Pay Now',style: TextStyle(color: Colors.green)),
-             ),
-
-           ],
-         );
-        });
+                  Navigator.of(context).pop(true);
+                },
+                child: Text('OK',style: TextStyle(color: CupertinoColors.white)),
+              ),
 
 
-
+            ],
+          );
       },
       child: Card(
         color: Color(0XFF3E3F43),
@@ -342,7 +415,7 @@ final r_colour;
                   ), Row(
                     children: [
                       Text("Payment: ",style:TextStyle(color: CupertinoColors.white)),
-                      Text("$payment ",style:TextStyle(color: p_colour)),
+                      Text("$payment ",style:TextStyle(color: payment=='Paid'?Colors.green:Colors.red)),
                     ],
                   ),
                   payment=='Paid'?Row(
@@ -362,7 +435,7 @@ final r_colour;
                   child: CircularProfileAvatar(
                     image,
 
-                    borderColor: colour,
+                    borderColor: Colors.green,
                     borderWidth: 5,
                     elevation: 2,
                     radius: 50,

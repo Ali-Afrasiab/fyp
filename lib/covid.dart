@@ -111,29 +111,43 @@ class _covidState extends State<covid> {
             Column(
                   children: [
                     _outputs != null
-                        ? Text(
+                        ? Column(
+                          children: [
+                            Text(
               "${_outputs[0]["label"]}",
               style: TextStyle(
                     color: CupertinoColors.white,
                     fontSize: 20.0,
 
               ),
-            ):Container(width: 0,height: 0,),
+            ),
+                            Text(
+              "Accuracy ${_outputs[0]["confidence"]}",
+              style: TextStyle(
+                    color: CupertinoColors.white,
+                    fontSize: 20.0,
+
+              ),
+            ),
+                          ],
+                        ):Container(width: 0,height: 0,),
                     sender=='self_created'?
-                    RaisedButton(
+                   _outputs!=null? RaisedButton(
                       color: Colors.blueGrey,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0)),
                       onPressed: (){
                         String result;
                         double confidence;
-                        if(_outputs[0]["label"]=="1 positive") {
+                        if(_outputs[0]["label"]=="1 Normal") {
                                   result = "Positive";
-confidence=_outputs[0]['confidence'];
+                                  confidence=_outputs[0]['confidence'];
                                 }
-                        if(_outputs[0]["label"]=="0 negative")
+                       else if(_outputs[0]["label"]=="0 Covid19")
                            result="Negative";
                        // print("doc_id :${doc_id}");
+                        else if(_outputs[0]["label"]=="2 Pneumonia")
+                          result='Pneumonia';
                         Firestore.instance
                             .collection('patient')
                             .document(doc_id)
@@ -152,7 +166,7 @@ confidence=_outputs[0]['confidence'];
                             ),),
                       );},
                       child: Text("Return to report creation",style:TextStyle(color:CupertinoColors.white)),
-                    ):RaisedButton(
+                    ):Container(width: 0,height: 0,):RaisedButton(
                       color: Colors.blueGrey,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0)),
@@ -160,13 +174,15 @@ confidence=_outputs[0]['confidence'];
                         if(_outputs!=null){
                             String result;
                             double confidence;
-                            if (_outputs[0]["label"] == "1 positive") {
-                              result = "Positive";
+                            if (_outputs[0]["label"] == "1 Normal") {
+                              result = "Negative";
                               confidence = _outputs[0]['confidence'];
                             }
-                            if (_outputs[0]["label"] == "0 negative")
-                              result = "Negative";
+                            else if (_outputs[0]["label"] == "0 Covid19")
+                              result = "Positive";
                          //   print("Patient doc_id :${doc_id}");
+                            else if (_outputs[0]["label"] == "0 Pneumonia")
+                              result = "Pneumonia";
                             Firestore.instance
                                 .collection('consultation')
                                 .document(doc_id)

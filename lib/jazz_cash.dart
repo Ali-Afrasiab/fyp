@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
@@ -7,16 +8,22 @@ import 'package:http/http.dart' as http;
 import 'package:remedium/patient_inventory.dart';
 
 class jazz_cash extends StatefulWidget {
-  const jazz_cash({Key key}) : super(key: key);
+final doc_id;
+
+  const jazz_cash({Key key, this.doc_id}) : super(key: key);
+
 
   @override
-  _jazz_cashState createState() => _jazz_cashState();
+  _jazz_cashState createState() => _jazz_cashState(doc_id);
 }
 
 class _jazz_cashState extends State<jazz_cash> {
   String sender_number;
   String amount;
+  final doc_id;
   bool num=false;
+
+  _jazz_cashState(this.doc_id);
   payment() async{
     var digest;
     String dateandtime = DateFormat("yyyyMMddHHmmss").format(DateTime.now());
@@ -243,16 +250,45 @@ class _jazz_cashState extends State<jazz_cash> {
                 shape: new RoundedRectangleBorder(
                     borderRadius: new BorderRadius.circular(30.0)),
                 onPressed: (){
-                  if(amount!=null && amount.isNotEmpty)
-                    setState(() {
-                      payment();
-                    });
-                  else showDialog(
+                  if(amount!=null && amount.isNotEmpty && int.parse(amount)>999) {
+                        setState(() {
+                          payment();
+
+                        });
+                        Firestore.instance.collection('consultation').document(doc_id).updateData({
+                          'payment':'Paid'
+                        });
+
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text('Payment Successful!'),
+                                content: Text('Try again to view results'),
+                                actions: [
+                                  Center(
+                                    child: TextButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>patient_inventory()),
+                                        );
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            });
+
+
+                      } else showDialog(
                       context: context,
                       builder: (context) {
                         return AlertDialog(
                           title: Text('Wrong Amount!'),
-                          content: Text('Enter a correct amount greater than base amount, R.s 1000'),
+                          content: Text('Enter a correct amount greater than base amount, R.s 999'),
                           actions: [
                             Center(
                               child: TextButton(

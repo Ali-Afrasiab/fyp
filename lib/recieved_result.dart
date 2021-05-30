@@ -122,7 +122,7 @@ String prescription;
             first_name = message.data['patient_first_name'];
             last_name = message.data['patient_last_name'];
             gender = message.data['patient_gender'];
-            condition = message.data['symptoms'];
+            condition = message.data['comments'];
             //final date = message.data['date'];
             telephone = message.data['patient_telephone'];
             age = message.data['patient_age'];
@@ -130,7 +130,7 @@ String prescription;
             result = message.data['patient_result'];
             profile_pic= message.data['patient_image'];
             x_ray=message.data['x-ray'];
-            prescription= message.data['description'];
+            prescription= message.data['comments'];
             if (result =='pending') {
               result = "pending";
               colour = Colors.yellowAccent;
@@ -253,31 +253,18 @@ String prescription;
                                         Row(
                                           children: [
                                             Text(
-                                              "Test Date ",
+                                              "Test Date :",
                                               style: TextStyle(
                                                   color: CupertinoColors.white),
                                             ),
                                             Text(
-                                             date==null?'': date,
+                                             date==null?'30/05/2021': date,
                                               style: TextStyle(color: Colors.white),
                                             ),
                                           ],
                                         ),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              "Pre-Existing Condition: ",
-                                              style: TextStyle(
-                                                  color: CupertinoColors.white),
-                                            ),
-                                            Text(
-                                             condition==null?'cancer, typhoid and malaria, spread of malignant cells': condition,
-                                              style: TextStyle(color: Colors.white),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
+
+                                        Column(
                                           children: [
                                             Text(
                                               "Doctors Comments:",
@@ -285,7 +272,9 @@ String prescription;
                                                   color: CupertinoColors.white),
                                             ),
                                             Text(
-                                              prescription==null?'':prescription,
+
+                                              prescription==null?'You dont have covid .':prescription,
+                                              maxLines: 5,
                                               style: TextStyle(color: Colors.white),
                                             ),
                                           ],
@@ -308,7 +297,7 @@ String prescription;
                                               clipBehavior:
                                                   Clip.antiAliasWithSaveLayer,
                                               child: Image.network(
-                                                x_ray==null?'':x_ray,
+                                               'https://firebasestorage.googleapis.com/v0/b/remedium-4f8f3.appspot.com/o/doctor_profile%2Faliafrasiab44%40gmail.com?alt=media&token=1c07b86e-d09e-4f1b-9dd6-c177e8b33acf',
                                                 fit: BoxFit.fill,
                                               )),
                                         ),

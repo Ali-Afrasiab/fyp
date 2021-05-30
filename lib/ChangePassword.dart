@@ -3,20 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:remedium/patient_inventory.dart';
 
+import 'doctor_inventory.dart';
+
 
 class ChangePassword extends StatefulWidget {
+final sender;
 
+  const ChangePassword({Key key, this.sender}) : super(key: key);
   @override
   _ChangePasswordState createState() => _ChangePasswordState();
 }
 
 class _ChangePasswordState extends State<ChangePassword>{
-
+  final sender;
 
   bool recently_logged_in=false;
   String new_password;
    String confirm_password;
    String old_password;
+
+  _ChangePasswordState({this.sender});
   @override
   Widget build(BuildContext context) {
 
@@ -31,6 +37,7 @@ class _ChangePasswordState extends State<ChangePassword>{
             color: CupertinoColors.white,
           ),
           onPressed: (){
+            if(sender=='patient'||sender=='consultation')
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -39,6 +46,16 @@ class _ChangePasswordState extends State<ChangePassword>{
                 ),
               ),
             );
+            else
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => doctor_inventory(
+
+                  ),
+                ),
+              );
+
           },
         ),
           title: Text("Password Settings"),
