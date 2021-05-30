@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1018046156075",
+    "project_id": "remedium-4f8f3",
+    "storage_bucket": "remedium-4f8f3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1018046156075:android:0fe52f236887089eba496e",
+        "android_client_info": {
+          "package_name": "com.example.remedium"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1018046156075-1827950gnm977gvk8616qojovur9nqdb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAspP68KZPUKYM8gXhQZQyASPCZQjn4T1A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1018046156075-1827950gnm977gvk8616qojovur9nqdb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
