@@ -1002,3 +1002,19 @@ class _add_picState extends State<add_pic> {
     );
   }
 }
+
+
+
+class send_request extends StatefulWidget {
+  const send_request({Key key}) : super(key: key);
+
+  @override
+  _send_requestState createState() => _send_requestState();
+}
+
+class _send_requestState extends State<send_request> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}

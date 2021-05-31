@@ -87,7 +87,7 @@ class _patient_sign_inState extends State<patient_sign_in> {
                 children: [
                   Padding(
                       padding: EdgeInsets.all(20),
-                      child: Text("Doctor", style: TextStyle(fontSize: 25,color:Colors.white))),
+                      child: Text("Patient", style: TextStyle(fontSize: 25,color:Colors.white))),
                   Padding(
                     padding: EdgeInsets.all(10),
                     child: TextField(style: TextStyle(color: Colors.white),
