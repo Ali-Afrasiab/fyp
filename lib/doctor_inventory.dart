@@ -42,12 +42,13 @@ class _doctor_inventoryState extends State<doctor_inventory> {
     }
   }
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  
 String search='';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: nav_drawer(),
+      drawer: loggedInUser.uid!=null?nav_drawer(doc_id: loggedInUser.uid,):nav_drawer(),
 
       appBar: new PreferredSize(
         child: new Container(
@@ -76,6 +77,7 @@ String search='';
                         onChanged: (value){setState(() {
                           search=value;
                         });},
+
                         decoration: InputDecoration(
                           fillColor: CupertinoColors.white,
 
@@ -129,8 +131,13 @@ String search='';
           child: Container(
             // width: double.infinity,
             // height: double.infinity,
-            decoration: const BoxDecoration(
-              color: Color(0xFF202125),
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage(
+                        "assets/images/doctor_inventory.jpg"
+                    ),
+                    fit: BoxFit.cover
+                )
             ),
             child: Column(
 
@@ -266,11 +273,12 @@ MessagesStream({Key key, this.search}) : super(key: key);
               final String patient_last_name = messagea.data['patient_last_name'];
               final String patient_first_name = messagea.data['patient_first_name'];
               final patient_gender = messagea.data['patient_gender'];
-              final patient_date = messagea.data['patient_date'];
+              final patient_date = messagea.data['date'];
               final doc_email = messagea.data['email'];
               final patient_email = messagea.data['patient_email'];
               final request = messagea.data['request'];
               final payment = messagea.data['payment'];
+              final doctor_doc_id =messagea.data['doctor_doc_id'];
 
               // message.data['result']="negative";
 
@@ -281,9 +289,9 @@ MessagesStream({Key key, this.search}) : super(key: key);
               Color p_colour;
               if (patient_result == 'pending') {
 
-colour=Colors.yellowAccent;
+              colour=Colors.yellowAccent;
               }
-              else if( patient_result=='Positive')
+              else if(patient_result=='Positive')
                 colour=Colors.red;
               else
                 colour=Colors.green;
@@ -298,7 +306,7 @@ colour=Colors.yellowAccent;
 
               final currentUser = loggedInUser.uid;
 
-              if(currentUser ==id && request=="accepted" && search==null){
+              if(currentUser ==doctor_doc_id && request=="accepted" && search==null){
                 final messageBubble = MessageBubble(
                   image: patient_image,
                   first_name: patient_first_name,

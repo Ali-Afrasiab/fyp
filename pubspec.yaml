@@ -90,6 +90,20 @@ flutter:
     - assets/images/diagnosis.png
     - assets/images/mobile_testing.png
     - assets/images/DifferentialDiagnosis.png
+    - assets/images/chatbot_data_collect.jpg
+    - assets/images/boat.png
+    - assets/images/glacier.jpg
+    - assets/images/sign_in.jpg
+    - assets/images/mask.jpg
+    - assets/images/doctor.jpg
+    - assets/images/doctor1.jpg
+    - assets/images/patient.jpg
+    - assets/images/patient1.jpg
+    - assets/images/doctor_inventory.jpg
+    - assets/images/patient_inventory.jpg
+    - assets/images/consultation.jpg
+    - assets/images/consultation1.jpg
+    - assets/images/jarvis.jpg
     - assets/model_unquant.tflite
     - assets/labels.txt
     - assets/high-lacing-314823-897963b2458d.json

@@ -116,7 +116,7 @@ class _jazz_cashState extends State<jazz_cash> {
                   icon: Icon(Icons.arrow_back_rounded,color: CupertinoColors.white,),
                   onPressed: () {
 
-                  num!=false?  Navigator.push(
+                  num==false?  Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) =>patient_inventory()),

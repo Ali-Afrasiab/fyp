@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:remedium/data/data.dart';
 import 'package:remedium/jarvis.dart';
@@ -10,9 +11,18 @@ import 'package:remedium/jazz_cash.dart';
 //import 'consultation.dart';
 import 'signin.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
+  HttpOverrides.global = new MyHttpOverrides();
+}
+class MyHttpOverrides extends HttpOverrides{
+  @override
+  HttpClient createHttpClient(SecurityContext context){
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -75,6 +85,7 @@ class _homeState extends State<home> {
       bottomSheet: currentindex != slides.length - 1
           ? Container(
               height: Platform.isAndroid ? 70 : 60,
+              color:  Color(0xFF202125),
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -85,7 +96,7 @@ class _homeState extends State<home> {
                           duration: Duration(microseconds: 400),
                           curve: Curves.linear);
                     },
-                    child: Text("SKIP"),
+                    child: Text("SKIP",style: TextStyle(color: CupertinoColors.white),),
                   ),
                   Row(
                     children: [
@@ -101,7 +112,7 @@ class _homeState extends State<home> {
                           duration: Duration(milliseconds: 400),
                           curve: Curves.linear);
                     },
-                    child: Text("NEXT"),
+                    child: Text("NEXT",style: TextStyle(color: CupertinoColors.white)),
                   ),
                 ],
               ),
@@ -110,7 +121,7 @@ class _homeState extends State<home> {
               alignment: Alignment.center,
               width: MediaQuery.of(context).size.width,
               height: Platform.isAndroid ? 70 : 60,
-              color: Colors.blue[800],
+              color: Color(0xFF202125),
               child: FlatButton(
                 //shape:  new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
                 onPressed: () {
@@ -139,6 +150,7 @@ class slidertile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

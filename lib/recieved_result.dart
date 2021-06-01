@@ -126,7 +126,7 @@ String prescription;
             //final date = message.data['date'];
             telephone = message.data['patient_telephone'];
             age = message.data['patient_age'];
-            date = message.data['patient_date'];
+            date = message.data['date'];
             result = message.data['patient_result'];
             profile_pic= message.data['patient_image'];
             x_ray=message.data['x-ray'];
@@ -258,7 +258,7 @@ String prescription;
                                                   color: CupertinoColors.white),
                                             ),
                                             Text(
-                                             date==null?'30/05/2021': date,
+                                             date==null?'': date,
                                               style: TextStyle(color: Colors.white),
                                             ),
                                           ],

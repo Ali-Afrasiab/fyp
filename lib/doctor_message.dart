@@ -94,8 +94,13 @@ class _doctor_messageState extends State<doctor_message> {
       ),
       body: SafeArea(
         child: Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFF202125),
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage(
+                      "assets/images/doctor_inventory.jpg"
+                  ),
+                  fit: BoxFit.cover
+              )
           ),
           child: Column(
 
@@ -117,11 +122,11 @@ class _doctor_messageState extends State<doctor_message> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => create_patient()),
+            MaterialPageRoute(builder: (context) => doctor_inventory()),
           );
         },
-        label: Text('Add Patient'),
-        icon: Icon(Icons.add),
+        label: Text('Inventory'),
+        icon: Icon(Icons.inventory),
 
       ),
     );
@@ -156,7 +161,7 @@ class MessagesStream extends StatelessWidget {
           final patient_gender = message.data['patient_gender'];
           final doc_id =message.documentID;
           final request=message.data['request'];
-
+          final doctor_doc_id=message.data['doctor_doc_id'];
           final email = message.data['email'];
           // message.data['result']="negative";
           //String result = message.data['result'];
@@ -168,7 +173,7 @@ class MessagesStream extends StatelessWidget {
           print('currentuser : $currentUser');
           print('doc_id : $doc_id');
 
-          if(currentUser == doc_id && request=="awaiting"){
+          if(currentUser == doctor_doc_id && request=="awaiting"){
             final messageBubble = MessageBubble(
               image: image,
               last_name: patient_last_name,

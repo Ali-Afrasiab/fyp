@@ -1,6 +1,8 @@
 
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:remedium/ChangePassword.dart';
 import 'package:remedium/doctor_sign_in.dart';
@@ -10,13 +12,25 @@ import 'doctor_inventory.dart';
 import 'editprofile.dart';
 import 'main.dart';
 
-class nav_drawer extends StatelessWidget {
-  final sender;
 
-   nav_drawer({this.sender});
+
+
+class nav_drawer extends StatefulWidget {
+  const nav_drawer({Key key, this.sender, this.doc_id}) : super(key: key);
+final sender;
+final doc_id;
+  @override
+  _nav_drawerState createState() => _nav_drawerState(sender: sender,doc_id: doc_id);
+}
+
+class _nav_drawerState extends State<nav_drawer> {
+  final sender;
+  final doc_id;
+  String availablity='';
+
+  _nav_drawerState({this.sender, this.doc_id});
   @override
   Widget build(BuildContext context) {
-    print('sender for drawer : $sender');
     return Drawer(
       child: Container(
         child: ListView(
@@ -40,14 +54,70 @@ class nav_drawer extends StatelessWidget {
                   ),
                 ),
                 decoration: BoxDecoration(
-                    color: Color(0xFF202125),
-                    /*image: DecorationImage(
+                  color: Color(0xFF202125),
+                  /*image: DecorationImage(
                         fit: BoxFit.fill,
                         image: AssetImage('assets/images/cover.jpg'))*/
                 ),
               ),
             ),
 
+          sender==null?  ListTileTheme(
+              iconColor: Colors.white,
+              textColor: Colors.white,
+              tileColor: Color(0xFF202125),
+              child: ListTile(
+                leading: Icon(Icons.event_available),
+
+title:    Row(
+  mainAxisAlignment: MainAxisAlignment.start,
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    RaisedButton(
+
+      onPressed: () {
+        setState(() {
+          availablity = 'Online';
+          Firestore.instance.collection('doctor').document(doc_id).updateData(
+              {'availability':availablity});
+        });
+      },
+      color: availablity != 'Online'
+          ? Colors.grey
+          : Colors.green,
+      child: Text(
+        'Online',
+        style: TextStyle(
+
+            color: CupertinoColors.white),
+      ),
+    ),
+    Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: RaisedButton(
+        onPressed: () {
+          setState(() {
+
+            availablity = 'Offline';
+            Firestore.instance.collection('doctor').document(doc_id).updateData(
+                {'availability':availablity});
+          });
+        },
+        color: availablity != 'Offline'
+            ? Colors.grey
+            : Colors.red,
+        child: Text(
+          'Offline',
+          style: TextStyle(
+              color: CupertinoColors.white),
+        ),
+      ),
+    ),
+  ],
+),
+
+              ),
+            ):Container(),
             ListTileTheme(
               iconColor: Colors.white,
               textColor: Colors.white,
@@ -76,7 +146,7 @@ class nav_drawer extends StatelessWidget {
                 title: Text('Favourites'),
                 onTap: () => {
 
-                     Navigator.push(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => consultation(sender:'favourites'),
@@ -93,12 +163,12 @@ class nav_drawer extends StatelessWidget {
                 leading: Icon(Icons.settings),
                 title: Text('Settings'),
                 onTap: () => {
-                //  print('sender : $sender'),
+                  //  print('sender : $sender'),
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => Settings(
-                        sender:sender
+                          sender:sender
                       ),
                     ),
                   ),
@@ -144,49 +214,44 @@ class nav_drawer extends StatelessWidget {
               textColor: Colors.white,
               tileColor: Color(0xFF202125),
               child: ListTile(
-              //tileColor: Colors.blueGrey,
+                //tileColor: Colors.blueGrey,
                 leading: Icon(Icons.exit_to_app),
                 title: Text('Logout'),
                 onTap: (){
-                FirebaseAuth.instance.signOut();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MyApp(),
-                  ),
-                );
-              },
-            ),
+                  FirebaseAuth.instance.signOut();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MyApp(),
+                    ),
+                  );
+                },
+              ),
             ),
             Column(
               children: [
 
-              Container(
-                width: 500,
-                height: 1000,
+                Container(
+                  width: 500,
+                  height: 1000,
 
-                decoration: new BoxDecoration(
-                    color: Color(0xFF202125),
-                    boxShadow: [
-                      new BoxShadow(
-                        color: Colors.blue,
-                        blurRadius: 20.0,
-                        spreadRadius: 1.0,
-                      ),
-                    ]),
+                  decoration: new BoxDecoration(
+                      color: Color(0xFF202125),
+                      boxShadow: [
+                        new BoxShadow(
+                          color: Colors.blue,
+                          blurRadius: 20.0,
+                          spreadRadius: 1.0,
+                        ),
+                      ]),
 
 
 
-              )
-            ],)
+                )
+              ],)
           ],
         ),
       ),
     );
   }
-
 }
-
-
-
-

@@ -55,7 +55,7 @@ class _patient_sign_inState extends State<patient_sign_in> {
                       SizedBox(width: 90,),
 
                       new Text(
-                        'Remedium',
+                        'Patient',
                         style: new TextStyle(
                             fontSize: 23.0,
                             fontWeight: FontWeight.w500,
@@ -78,18 +78,21 @@ class _patient_sign_inState extends State<patient_sign_in> {
             preferredSize: new Size(MediaQuery.of(context).size.width, 80.0),
           ),
           body: Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFF202125),
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage(
+                        "assets/images/patient1.jpg"
+                    ),
+                    fit: BoxFit.cover
+                )
             ),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+
                   Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Text("Patient", style: TextStyle(fontSize: 25,color:Colors.white))),
-                  Padding(
-                    padding: EdgeInsets.all(10),
+                    padding: EdgeInsets.only(left: 10,right: 10,bottom: 10,top: 250),
                     child: TextField(style: TextStyle(color: Colors.white),
 
                       keyboardType: TextInputType.emailAddress,
@@ -99,7 +102,7 @@ class _patient_sign_inState extends State<patient_sign_in> {
                       // obscureText: true,
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Color(0xFF3C4043),
+                        fillColor:  Color(0xFF202125),
 
 
                         border: new OutlineInputBorder(
@@ -125,7 +128,7 @@ class _patient_sign_inState extends State<patient_sign_in> {
                       obscureText: true,
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Color(0xFF3C4043),
+                        fillColor:  Color(0xFF202125),
 
                         border: new OutlineInputBorder(
                           borderRadius: const BorderRadius.all(
@@ -141,7 +144,7 @@ class _patient_sign_inState extends State<patient_sign_in> {
                     ),
                   ),
                   RaisedButton(
-                      color: Color(0XFF3C4043),
+                      color:  Color(0xFF202125),
                       padding: EdgeInsets.fromLTRB(80, 15, 80, 15),
                       shape: new RoundedRectangleBorder(
                           borderRadius: new BorderRadius.circular(30.0)),

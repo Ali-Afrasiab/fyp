@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:remedium/doctor_inventory.dart';
 import 'doctor_sign_in.dart';
+import 'doctor_info.dart';
 
 final _firestore = Firestore.instance;
 FirebaseStorage _storage = FirebaseStorage.instance;
@@ -402,7 +403,7 @@ class _doctor_sign_upState extends State<doctor_sign_up> {
                                     filled: true,
                                     hintStyle:
                                     new TextStyle(color: Color(0XFFDCDDE1)),
-                                    hintText: "Telephone",
+                                    hintText: "Jazz cash Number",
                                     fillColor: Color(0xFF3C4043),),
                                 ),
                               ),
@@ -498,42 +499,129 @@ class _doctor_sign_upState extends State<doctor_sign_up> {
                             loading =true;
                           });
                           try{
-                            final newUser = await _auth.createUserWithEmailAndPassword(email: email , password: password);
-                            StorageReference reference = _storage.ref().child("doctor_profile/${email}");
+                            if(telephone!=null && telephone.length==11){
+                              final newUser =
+                                  await _auth.createUserWithEmailAndPassword(
+                                      email: email, password: password);
+                              StorageReference reference = _storage
+                                  .ref()
+                                  .child("doctor_profile/${email}");
 
-                            //Upload the file to firebase
-                            StorageUploadTask uploadTask = reference.putFile(_image);
-                            String docUrl = await (await uploadTask.onComplete).ref.getDownloadURL();
-                          //final newUser = await _auth.createUserWithEmailAndPassword(email: email , password: password);
-                            Random random = new Random();
+                              //Upload the file to firebase
+                              StorageUploadTask uploadTask =
+                                  reference.putFile(_image);
+                              String docUrl =
+                                  await (await uploadTask.onComplete)
+                                      .ref
+                                      .getDownloadURL();
+                              //final newUser = await _auth.createUserWithEmailAndPassword(email: email , password: password);
+                              Random random = new Random();
 
-                            int random_number = random.nextInt(100);
-                            _firestore.collection('doctor').document(newUser.uid).setData({
+                              int random_number = random.nextInt(100);
+                              _firestore
+                                  .collection('doctor')
+                                  .document(newUser.uid)
+                                  .setData({
+                                'first_name': first_name,
+                                'email': email,
+                                'last_name': last_name,
+                                'age': age,
+                                'gender': gender,
+                                'zip_code': zip_code,
+                                'telephone': telephone,
+                                'degree': degree,
+                                'experience': experience,
+                                'description': description,
+                                'image': docUrl,
+                                'unique_id': random_number,
+                                'doc_id': newUser.uid,
+                                'availability':'',
+                                'base_price':''
+                              });
 
-                              'first_name': first_name,
-                              'email': email,
-                              'last_name': last_name,
-                              'age': age,
-                              'gender': gender,
-                              'zip_code': zip_code,
-                              'telephone': telephone,
-                              'degree': degree,
-                              'experience': experience,
-                              'description' : description,
-                              'image': docUrl,
-                              'unique_id':random_number,
-                              'doc_id': newUser.uid,
-                            });
+                              if (newUser != null)
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => doctor_info(doc_id: newUser.uid,)
+                                  ),
+                                );
+                            }
+                            else {
+                              setState(() {
+                                loading=false;
+                              });
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      backgroundColor: Color(0XFF3E3F43),
+                                      elevation: 10,
 
+                                      //shadowColor: Colors.blue,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(25.0),
+                                      ),
+                                      title: Text(
+                                        'Kindly add a valid Jazz cash account number',
+                                        style: TextStyle(
+                                            color: CupertinoColors.white),
+                                      ),
+                                      content: Text(
+                                        'A jazz cash account must be added to recieve payments',
+                                        style: TextStyle(
+                                            color: CupertinoColors.white),
+                                      ),
 
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text('Ok'),
+                                        ),
+                                      ],
+                                    );
+                                  });
+                            }
+                          }
+                          catch(e){
 
+                          setState(() {
+                            loading=false;
+                          });
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  backgroundColor: Color(
+                                      0XFF3E3F43),
+                                  elevation: 10,
 
-                            if(newUser !=null)
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => doctor_inventory()),
-                              );}
-                          catch(e){print(e);}
+                                  //shadowColor: Colors.blue,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        25.0),
+                                  ),
+                                  title:
+                                  Text(
+                                    'Email or Password is invalid',style: TextStyle(color: CupertinoColors.white),),
+                                  content:   Text(
+                                    'Password should be at least 6 characters, 3 words and 3 letters',style: TextStyle(color: CupertinoColors.white),),
+
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                       Navigator.pop(context);
+                                      },
+                                      child: Text('Ok'),
+                                    ),
+                                  ],
+                                );
+                              });
+                          }
                         },
                         child: Text("Submit",style:TextStyle(color: Colors.white))),
                   ),

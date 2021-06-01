@@ -6,6 +6,7 @@ import 'package:remedium/patient_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:remedium/selfdiagnosis.dart';
 //import 'consultation.dart';
+import 'chat_data_collect.dart';
 import 'doctor_sign_in.dart';
 import 'jarvis.dart';
 
@@ -111,11 +112,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
       body:
 
-      Container(decoration: const BoxDecoration(
-        //color: Color(0xFF202125),
-        color: Colors.white,
+      Container(
 
-      ),
+        decoration: BoxDecoration(
+            image: DecorationImage(
+
+                image: AssetImage(
+                    "assets/images/mask.jpg"
+                ),
+
+                fit: BoxFit.cover
+            )
+        ),
+
+
+
         child: Center(
           child: Column(
 
@@ -127,6 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 child: Center(
                   child: Container(
+
                         height: 25,
                       child:Text("SIGN IN AS",style: TextStyle(fontSize: 25,color: Colors.white),)),
                 )),
@@ -179,7 +191,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         //   });
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => jarvis()),
+                          MaterialPageRoute(builder: (context) => chatbot_data_collect()),
                         );
 
 

@@ -121,7 +121,7 @@ String search='';
                   width: 10,
                 ),
                 new DropdownButton<String>(
-hint: Text(''),
+hint: Text(dropdownValue,style: TextStyle(color: CupertinoColors.white)),
                   dropdownColor: Color(0xFF202125),
 
                   icon:  Icon(Icons.filter_alt_outlined,color: CupertinoColors.white,),
@@ -135,7 +135,7 @@ hint: Text(''),
                     setState(() {
                       dropdownValue=value;
                     });
-                    print('filter : $dropdownValue');
+                //    print('filter : $dropdownValue');
                   },
                 ),
 
@@ -156,8 +156,13 @@ hint: Text(''),
       ),
       body: SafeArea(
         child: Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFF202125),
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage(
+                      "assets/images/consultation1.jpg"
+                  ),
+                  fit: BoxFit.cover
+              )
           ),
           child: Column(
             //    color: Color(0xFF202125),
@@ -245,7 +250,8 @@ print('doc_id ${message.data['doc_id']}');
             final email = message.data['email'];
             final image = message.data['image'];
             final doc_id = message.documentID;
-
+            final base_price = message.data['base_price'];
+            final availability = message.data['availability'];
             //print(image);
             if(first_name==null)
               first_name='';
@@ -269,7 +275,10 @@ print('doc_id ${message.data['doc_id']}');
                   email: email,
                   image: image,
                   doc_id: doc_id,
-              sender: sender,);
+              sender: sender,
+                base_price: base_price,
+                availability:availability
+              );
 
               messageBubbles.add(messageBubble);
             }
@@ -284,7 +293,7 @@ print('doc_id ${message.data['doc_id']}');
                   email: email,
                   image: image,
                   doc_id: doc_id,
-                sender: sender,);
+                sender: sender,base_price: base_price,availability:availability);
 
               messageBubbles.add(messageBubble);
             } else if (filter == 'degree' &&
@@ -298,7 +307,7 @@ print('doc_id ${message.data['doc_id']}');
                   email: email,
                   image: image,
                   doc_id: doc_id,
-                sender: sender,);
+                sender: sender,base_price: base_price,availability:availability);
 
               messageBubbles.add(messageBubble);
             }
@@ -315,7 +324,7 @@ print('doc_id ${message.data['doc_id']}');
                     email: email,
                     image: image,
                     doc_id: doc_id,
-                  sender: sender,);
+                  sender: sender,base_price: base_price,availability:availability);
 
                 messageBubbles.add(messageBubble);
               } else if (filter == 'name' &&
@@ -329,7 +338,7 @@ print('doc_id ${message.data['doc_id']}');
                     email: email,
                     image: image,
                     doc_id: doc_id,
-                  sender: sender,);
+                  sender: sender,base_price: base_price,availability:availability);
 
                 messageBubbles.add(messageBubble);
               } else if (filter == 'degree' &&
@@ -343,7 +352,9 @@ print('doc_id ${message.data['doc_id']}');
                     email: email,
                     image: image,
                     doc_id: doc_id,
-                  sender: sender,);
+                  sender: sender,
+                  base_price: base_price,availability:availability
+                );
 
                 messageBubbles.add(messageBubble);
               }
@@ -365,7 +376,7 @@ print('doc_id ${message.data['doc_id']}');
 class MessageBubble extends StatelessWidget {
 
 
-  MessageBubble({this.sender,this.doc_id,this.image,this.email,this.experience, this.last_name, this.degree, this.first_name, });
+  MessageBubble({this.sender,this.doc_id,this.image,this.email,this.experience, this.last_name, this.degree, this.first_name, this.base_price, this.availability, });
   final String first_name;
   final String sender;
   final String email;
@@ -374,8 +385,8 @@ class MessageBubble extends StatelessWidget {
   final String degree;
   final String image;
   final String doc_id;
-
-
+  final base_price;
+final availability;
   @override
   Widget build(BuildContext context) {
     return FlatButton(
@@ -405,6 +416,7 @@ class MessageBubble extends StatelessWidget {
                   Text("Name: ${first_name}${last_name} ",style:TextStyle(color: CupertinoColors.white)),
                   Text("Degree: ${degree}",style:TextStyle(color: CupertinoColors.white)),
                   Text("Experience: ${experience}",style:TextStyle(color: CupertinoColors.white)),
+                  Text("Base Price: ${base_price}",style:TextStyle(color: CupertinoColors.white)),
 
 
                 ],
@@ -417,14 +429,19 @@ class MessageBubble extends StatelessWidget {
                   child: CircularProfileAvatar(
                    image,
 
-                    borderColor: Colors.purpleAccent,
+                    borderColor: Colors.transparent,
                     borderWidth: 5,
                     elevation: 2,
                     radius: 50,
                     cacheImage: true,
                   ),
                 ),
-                Text("id:1233",style:TextStyle(color: CupertinoColors.white))
+                Row(
+                  children: [
+                    Text("Availability: ",style:TextStyle(color:CupertinoColors.white)),
+                    Text("$availability",style:TextStyle(color: availability!='Online'?Colors.red:Colors.green)),
+                  ],
+                )
               ],
             ),
           ],

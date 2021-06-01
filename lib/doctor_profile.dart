@@ -517,9 +517,9 @@ class MessagesStream extends StatelessWidget {
                                                   width: 150,
                                                   child: TextField(style: TextStyle(color: CupertinoColors.white),
                                                     onChanged: (value) =>
-                                                        first_name = value,
+                                                    patient_first_name = value,
                                                     decoration: InputDecoration(
-                                                        hintText: '$first_name'),
+                                                        hintText: '$patient_first_name'),
                                                   ),
                                                 ),
                                               ],
@@ -535,9 +535,9 @@ class MessagesStream extends StatelessWidget {
                                                   width: 150,
                                                   child: TextField(style: TextStyle(color: CupertinoColors.white),
                                                     onChanged: (value) =>
-                                                        last_name = value,
+                                                        patient_last_name = value,
                                                     decoration: InputDecoration(
-                                                        hintText: '$last_name'),
+                                                        hintText: '$patient_last_name'),
                                                   ),
                                                 ),
                                               ],
@@ -563,6 +563,24 @@ class MessagesStream extends StatelessWidget {
                                             Row(
                                               children: [
                                                 Text(
+                                                  "Age : ",
+                                                  style: TextStyle(),
+                                                ),
+                                                // Text("${email}",style:TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                                                Container(
+                                                  width: 150,
+                                                  child: TextField(style: TextStyle(color: CupertinoColors.white),
+                                                    onChanged: (value) =>
+                                                       patient_age = value,
+                                                    decoration: InputDecoration(
+                                                        hintText: '$patient_age'),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(
                                                   "Phone : ",
                                                   style: TextStyle(),
                                                 ),
@@ -571,9 +589,9 @@ class MessagesStream extends StatelessWidget {
                                                   width: 150,
                                                   child: TextField(style: TextStyle(color: CupertinoColors.white),
                                                     onChanged: (value) =>
-                                                        telephone = value,
+                                                    patient_telephone = value,
                                                     decoration: InputDecoration(
-                                                        hintText: '$telephone'),
+                                                        hintText: '$patient_telephone'),
                                                   ),
                                                 ),
                                               ],
@@ -594,7 +612,7 @@ class MessagesStream extends StatelessWidget {
                                                     child: TextField(
                                                       maxLines: 5,
                                                       onChanged: (value) =>
-                                                          symptoms = value,
+                                                      symptoms = value,
                                                       style: TextStyle(color: CupertinoColors.white),
                                                       decoration: InputDecoration(
 
@@ -620,78 +638,118 @@ class MessagesStream extends StatelessWidget {
                                       ),
                                       TextButton(
                                         onPressed: () async {
+                                          if(_image==null) {
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return AlertDialog(
+                                                      backgroundColor:
+                                                          Color(0XFF3E3F43),
+                                                      title: Text(
+                                                        'Please select a X-ray to continue',
+                                                        style: TextStyle(
+                                                            color:
+                                                                CupertinoColors
+                                                                    .white),
+                                                      ),
+                                                      actions: [
+                                                        Center(
+                                                          child: TextButton(
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(true);
+                                                            },
+                                                            child: Text('OK'),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  });
+                                            }
+                                          else {
+                                            StorageReference reference = _storage
+                                                .ref()
+                                                .child(
+                                                "doctor_profile/${patient_email}");
 
-                                          StorageReference reference = _storage
-                                              .ref()
-                                              .child("doctor_profile/${email}");
+                                            //Upload the file to firebase
+                                            StorageUploadTask uploadTask =
+                                            reference.putFile(_image);
+                                            String docUrl =
+                                            await (await uploadTask.onComplete)
+                                                .ref
+                                                .getDownloadURL();
+                                            _firestore
+                                                .collection('consultation')
+                                                .add({
+                                              'first_name': first_name,
+                                              'email': email,
+                                              'last_name': last_name,
+                                              'age': age,
+                                              'gender': gender,
+                                              'degree': degree,
+                                              'telephone': telephone,
+                                              'request': "awaiting",
+                                              'experience': experience,
+                                              'description': description,
+                                              'image': image,
+                                              'doctor_doc_id': doc_id,
+                                              'patient_id': patient_id,
+                                              'patient_first_name':
+                                              patient_first_name,
+                                              'patient_email': patient_email,
+                                              'patient_last_name': patient_last_name,
+                                              'patient_age': patient_age,
+                                              'patient_gender': patient_gender,
+                                              'patient_telephone': patient_telephone,
+                                              'request': "awaiting",
+                                              'patient_image': patient_image,
+                                              'date': formatted,
+                                              'symptoms': symptoms,
+                                              'x-ray': docUrl,
+                                              'patient_result': 'pending',
+                                              'payment': 'Not Paid',
+                                              'doctor_aprroved':'',
+                                              'comments': ''
+                                            });
 
-                                          //Upload the file to firebase
-                                          StorageUploadTask uploadTask =
-                                              reference.putFile(_image);
-                                          String docUrl =
-                                              await (await uploadTask.onComplete)
-                                                  .ref
-                                                  .getDownloadURL();
-                                          _firestore
-                                              .collection('consultation')
-                                              .document(doc_id)
-                                              .setData({
-                                            'first_name': first_name,
-                                            'email': email,
-                                            'last_name': last_name,
-                                            'age': age,
-                                            'gender': gender,
-                                            'degree': degree,
-                                            'telephone': telephone,
-                                            'request': "awaiting",
-                                            'experience': experience,
-                                            'description': description,
-                                            'image': image,
-                                            'doctor_doc_id': doc_id,
-                                            'patient_id': patient_id,
-                                            'patient_first_name':
-                                                patient_first_name,
-                                            'patient_email': patient_email,
-                                            'patient_last_name': patient_last_name,
-                                            'patient_age': patient_age,
-                                            'patient_gender': patient_gender,
-                                            'patient_telephone': patient_telephone,
-                                            'request': "awaiting",
-                                            'patient_image': patient_image,
-                                            'date': formatted,
-                                            'symptoms': symptoms,
-                                            'x-ray': docUrl,
-                                            'patient_result': 'pending',
-                                            'payment':'Not Paid',
-                                          });
 
-                                          AlertDialog(
-                                            backgroundColor: Color(0XFF3E3F43),
-                                            elevation: 10,
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    backgroundColor: Color(
+                                                        0XFF3E3F43),
+                                                    elevation: 10,
 
-                                            //shadowColor: Colors.blue,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(25.0),
-                                            ),
-                                            title:
-                                                Text('Your request has been sent!'),
+                                                    //shadowColor: Colors.blue,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                      BorderRadius.circular(
+                                                          25.0),
+                                                    ),
+                                                    title:
+                                                    Text(
+                                                        'Your request has been sent!',style: TextStyle(color: CupertinoColors.white),),
 
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop(true);
-                                                },
-                                                child: Text('Ok'),
-                                              ),
-                                            ],
-                                          );
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    patient_inventory()),
-                                          );
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (context) =>
+                                                                    patient_inventory()),
+                                                          );
+                                                        },
+                                                        child: Text('Ok'),
+                                                      ),
+                                                    ],
+                                                  );
+                                                });
+
+                                          }
                                         },
                                         child: Text('OK'),
                                       ),
@@ -1005,16 +1063,3 @@ class _add_picState extends State<add_pic> {
 
 
 
-class send_request extends StatefulWidget {
-  const send_request({Key key}) : super(key: key);
-
-  @override
-  _send_requestState createState() => _send_requestState();
-}
-
-class _send_requestState extends State<send_request> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}

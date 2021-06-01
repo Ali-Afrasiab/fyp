@@ -9,6 +9,7 @@ import 'package:remedium/jazz_cash.dart';
 import 'package:remedium/nav_drawer.dart';
 import 'package:remedium/patient_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:remedium/payment.dart';
 
 import 'consultation.dart';
 import 'recieved_result.dart';
@@ -45,6 +46,7 @@ class _doctor_inventoryState extends State<patient_inventory> {
     }
   }
   String search='';
+  String dropdownValue='Show All';
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
@@ -97,22 +99,27 @@ class _doctor_inventoryState extends State<patient_inventory> {
                   ),
                 ),
 
-                // Expanded(
-                //   child: Padding(
-                //     padding:  EdgeInsets.all(8.0),
-                //     child: RaisedButton(
-                //       color: Color(0xFF3C4043),
-                //       shape: new RoundedRectangleBorder(
-                //           borderRadius: new BorderRadius.circular(70.0)),
-                //       onPressed: () {},
-                //       padding: EdgeInsets.fromLTRB(1, 10, 1, 10),
-                //       child: Icon(
-                //         Icons.filter_alt_outlined,
-                //         color: CupertinoColors.white,
-                //       ),
-                //     ),
-                //   ),
-                // ),
+                Padding(
+                  padding:  EdgeInsets.all(8.0),
+                  child:  new DropdownButton<String>(
+                    hint: Text(dropdownValue,style: TextStyle(color: CupertinoColors.white),),
+                    dropdownColor: Color(0xFF202125),
+
+                    icon:  Icon(Icons.filter_alt_outlined,color: CupertinoColors.white,),
+                    items: <String>['Show All','Request Accepted','Result Pending','Positive Results', 'Negative Results'].map((String value) {
+                      return new DropdownMenuItem<String>(
+                        value: value,
+                        child: new Text(value,style: TextStyle(color: CupertinoColors.white),),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        dropdownValue=value;
+                      });
+                     // print('filter : $dropdownValue');
+                    },
+                  ),
+                ),
               ],
             ),
           ),
@@ -128,8 +135,13 @@ class _doctor_inventoryState extends State<patient_inventory> {
       ),
       body: SafeArea(
         child: Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFF202125),
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage(
+                      "assets/images/patient_inventory.jpg"
+                  ),
+                  fit: BoxFit.cover
+              )
           ),
           child: Column(
             //    color: Color(0xFF202125),
@@ -137,7 +149,7 @@ class _doctor_inventoryState extends State<patient_inventory> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              search.isNotEmpty?MessagesStream(search: search,):MessagesStream(),
+              search.isNotEmpty?MessagesStream(search: search,filter: dropdownValue, ):MessagesStream(filter: dropdownValue,),
             ],
           ),
         ),
@@ -162,8 +174,9 @@ class _doctor_inventoryState extends State<patient_inventory> {
 
 class MessagesStream extends StatelessWidget {
   final search;
+  final filter;
 
-  const MessagesStream({Key key, this.search}) : super(key: key);
+  const MessagesStream({Key key, this.search,this.filter}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -180,16 +193,19 @@ class MessagesStream extends StatelessWidget {
         List<MessageBubble> messageBubbles = [];
 
         for (var message in messages) {
-          String first_name = message.data['first_name'];
-          String last_name = message.data['last_name'];
+          String first_name = message.data['patient_first_name'];
+          String last_name = message.data['patient_last_name'];
           final experience = message.data['experience'];
           final degree = message.data['degree'];
-          final email = message.data['email'];
-          final image = message.data['image'];
+          final email = message.data['patient_email'];
+          final image = message.data['patient_image'];
           final request=message.data['request'];
           final payment= message.data['payment'];
+          final age= message.data['patient_age'];
+          final phone= message.data['patient_telephone'];
 
 
+          final doctor_approved =message.data['doctor_approved'];
 
           final uid = message.data['patient_id'];
 
@@ -226,47 +242,236 @@ class MessagesStream extends StatelessWidget {
           String name =
               first_name.toLowerCase() + ' ' + last_name.toLowerCase();
 
-          if (currentUser == uid && search==null) {
-            final messageBubble = MessageBubble(
+          if(filter=='Show All'){
+            if (currentUser == uid && search == null) {
+              final messageBubble = MessageBubble(
                 first_name: first_name,
                 last_name: last_name,
                 experience: experience,
                 degree: degree,
                 email: email,
                 image: image,
-              request:request,
-              result: result,
-              colour: colour,
-              doc_id: message.documentID,
-              payment: payment,
-              r_colour: r_colour,
-              p_colour: p_colour,
+                request: request,
+                result: result,
+                colour: colour,
+                doc_id: message.documentID,
+                payment: payment,
+                r_colour: r_colour,
+                p_colour: p_colour,
+                doctor_approved: doctor_approved,
+                age: age,
+                phone: phone,
+              );
 
-            );
+              messageBubbles.add(messageBubble);
+            } else if (currentUser == uid &&
+                name.contains(search.toLowerCase())) {
+              final messageBubble = MessageBubble(
+                first_name: first_name,
+                last_name: last_name,
+                experience: experience,
+                degree: degree,
+                email: email,
+                image: image,
+                request: request,
+                result: result,
+                colour: colour,
+                doc_id: message.documentID,
+                payment: payment,
+                r_colour: r_colour,
+                p_colour: p_colour,
+                doctor_approved: doctor_approved,
+                age: age,
+                phone: phone,
+              );
 
-            messageBubbles.add(messageBubble);
+              messageBubbles.add(messageBubble);
+            }
           }
-         else if (currentUser == uid && name.contains(search.toLowerCase())) {
-            final messageBubble = MessageBubble(
-              first_name: first_name,
-              last_name: last_name,
-              experience: experience,
-              degree: degree,
-              email: email,
-              image: image,
-              request:request,
-              result: result,
-              colour: colour,
-              doc_id: message.documentID,
-              payment: payment,
-              r_colour: r_colour,
-              p_colour: p_colour,
+          if(filter=='Positive Results' && result=='Positive'){
+            if (currentUser == uid && search == null) {
+              final messageBubble = MessageBubble(
+                first_name: first_name,
+                last_name: last_name,
+                experience: experience,
+                degree: degree,
+                email: email,
+                image: image,
+                request: request,
+                result: result,
+                colour: colour,
+                doc_id: message.documentID,
+                payment: payment,
+                r_colour: r_colour,
+                p_colour: p_colour,
+                doctor_approved: doctor_approved,
+                age: age,
+                phone: phone,
+              );
 
-            );
+              messageBubbles.add(messageBubble);
+            } else if (currentUser == uid &&
+                name.contains(search.toLowerCase())) {
+              final messageBubble = MessageBubble(
+                first_name: first_name,
+                last_name: last_name,
+                experience: experience,
+                degree: degree,
+                email: email,
+                image: image,
+                request: request,
+                result: result,
+                colour: colour,
+                doc_id: message.documentID,
+                payment: payment,
+                r_colour: r_colour,
+                p_colour: p_colour,
+                doctor_approved: doctor_approved,
+                age: age,
+                phone: phone,
+              );
 
-            messageBubbles.add(messageBubble);
+              messageBubbles.add(messageBubble);
+            }
           }
+          if(filter=='Negative Results' && result=='Negative'){
+            if (currentUser == uid && search == null) {
+              final messageBubble = MessageBubble(
+                first_name: first_name,
+                last_name: last_name,
+                experience: experience,
+                degree: degree,
+                email: email,
+                image: image,
+                request: request,
+                result: result,
+                colour: colour,
+                doc_id: message.documentID,
+                payment: payment,
+                r_colour: r_colour,
+                p_colour: p_colour,
+                doctor_approved: doctor_approved,
+                age: age,
+                phone: phone,
+              );
 
+              messageBubbles.add(messageBubble);
+            } else if (currentUser == uid &&
+                name.contains(search.toLowerCase())) {
+              final messageBubble = MessageBubble(
+                first_name: first_name,
+                last_name: last_name,
+                experience: experience,
+                degree: degree,
+                email: email,
+                image: image,
+                request: request,
+                result: result,
+                colour: colour,
+                doc_id: message.documentID,
+                payment: payment,
+                r_colour: r_colour,
+                p_colour: p_colour,
+                doctor_approved: doctor_approved,
+                age: age,
+                phone: phone,
+              );
+
+              messageBubbles.add(messageBubble);
+            }
+          }
+          if(filter=='Request Accepted' && request=='accepted'){
+            if (currentUser == uid && search == null) {
+              final messageBubble = MessageBubble(
+                first_name: first_name,
+                last_name: last_name,
+                experience: experience,
+                degree: degree,
+                email: email,
+                image: image,
+                request: request,
+                result: result,
+                colour: colour,
+                doc_id: message.documentID,
+                payment: payment,
+                r_colour: r_colour,
+                p_colour: p_colour,
+                doctor_approved: doctor_approved,
+                age: age,
+                phone: phone,
+              );
+
+              messageBubbles.add(messageBubble);
+            } else if (currentUser == uid &&
+                name.contains(search.toLowerCase())) {
+              final messageBubble = MessageBubble(
+                first_name: first_name,
+                last_name: last_name,
+                experience: experience,
+                degree: degree,
+                email: email,
+                image: image,
+                request: request,
+                result: result,
+                colour: colour,
+                doc_id: message.documentID,
+                payment: payment,
+                r_colour: r_colour,
+                p_colour: p_colour,
+                doctor_approved: doctor_approved,
+                age: age,
+                phone: phone,
+              );
+
+              messageBubbles.add(messageBubble);
+            }
+          }
+          if(filter=='Result Pending' && result=='pending'){
+            if (currentUser == uid && search == null) {
+              final messageBubble = MessageBubble(
+                first_name: first_name,
+                last_name: last_name,
+                experience: experience,
+                degree: degree,
+                email: email,
+                image: image,
+                request: request,
+                result: result,
+                colour: colour,
+                doc_id: message.documentID,
+                payment: payment,
+                r_colour: r_colour,
+                p_colour: p_colour,
+                doctor_approved: doctor_approved,
+                age: age,
+                phone: phone,
+              );
+
+              messageBubbles.add(messageBubble);
+            } else if (currentUser == uid &&
+                name.contains(search.toLowerCase())) {
+              final messageBubble = MessageBubble(
+                first_name: first_name,
+                last_name: last_name,
+                experience: experience,
+                degree: degree,
+                email: email,
+                image: image,
+                request: request,
+                result: result,
+                colour: colour,
+                doc_id: message.documentID,
+                payment: payment,
+                r_colour: r_colour,
+                p_colour: p_colour,
+                doctor_approved: doctor_approved,
+                age: age,
+                phone: phone,
+              );
+
+              messageBubbles.add(messageBubble);
+            }
+          }
         }
         return Expanded(
           child: ListView(
@@ -282,7 +487,7 @@ class MessagesStream extends StatelessWidget {
 class MessageBubble extends StatelessWidget {
 
 
-  MessageBubble({this.payment,this.doc_id,this.image,this.email,this.experience, this.last_name, this.degree, this.first_name, this.request, this.result, this.colour, this.p_colour, this.r_colour, });
+  MessageBubble({this.payment,this.doc_id,this.image,this.email,this.experience, this.last_name, this.degree, this.first_name, this.request, this.result, this.colour, this.p_colour, this.r_colour, this.doctor_approved, this.age, this.phone, });
   final String first_name;
   final String email;
   final String last_name;
@@ -290,12 +495,15 @@ class MessageBubble extends StatelessWidget {
   final String degree;
   final String image;
   final String doc_id;
+  final age;
+  final phone;
 final result;
 final Color colour;
 final String request;
 final payment;
 final p_colour;
 final r_colour;
+final doctor_approved;
   @override
   Widget build(BuildContext context) {
     return FlatButton(
@@ -305,7 +513,7 @@ final r_colour;
 
         if(request=='accepted')
           {
-            if(result!='pending' && payment=='Paid')
+            if(result!='pending' && payment=='Paid' && doctor_approved=='approved')
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -356,6 +564,7 @@ final r_colour;
                           MaterialPageRoute(
                               builder: (context) => jazz_cash(doc_id: doc_id,)),
                         );
+
                       },
                       child: Text('Pay Now',style: TextStyle(color: Colors.green)),
                     ),
@@ -405,8 +614,8 @@ final r_colour;
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("Name: ${first_name} ${last_name} ",style:TextStyle(color: CupertinoColors.white)),
-                  Text("Degree: ${degree}",style:TextStyle(color: CupertinoColors.white)),
-                  Text("Experience: ${experience}",style:TextStyle(color: CupertinoColors.white)),
+                  Text("Age: ${age}",style:TextStyle(color: CupertinoColors.white)),
+                  Text("Phone: ${phone}",style:TextStyle(color: CupertinoColors.white)),
                   Row(
                     children: [
                       Text("Request: ",style:TextStyle(color: CupertinoColors.white)),

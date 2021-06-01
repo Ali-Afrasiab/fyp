@@ -366,6 +366,7 @@ print('');
                     RaisedButton(
                       color: Colors.transparent,
                       onPressed: (){
+
                         showDialog(
                             context: context,
                             builder: (context) {
@@ -387,7 +388,7 @@ print('');
                                     child: TextButton(
                                       onPressed: () {
                                         Firestore.instance
-                                            .collection('patient')
+                                            .collection('consultation')
                                             .document(doc_id)
                                             .updateData({
                                           "comments":comments
@@ -430,13 +431,57 @@ print('');
                           shape: new RoundedRectangleBorder(
                               borderRadius: new BorderRadius.circular(30.0)),
                           onPressed: () {
-                        //
-                        //
-                        //     /*   Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //       builder: (context)),
-                        // );*/
+                            if(result!='pending') {
+                              Firestore.instance
+                                  .collection('consultation')
+                                  .document(doc_id)
+                                  .updateData({'doctor_approved': 'approved'});
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      backgroundColor: Color(0xFF202125),
+                                      title: Text(
+                                        'Report Sent to Patient',
+                                        style: TextStyle(
+                                            color: CupertinoColors.white),
+                                      ),
+                                      actions: [
+                                        Center(
+                                          child: TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop(true);
+                                            },
+                                            child: Text('OK'),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  });
+                            }
+                            else
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      backgroundColor: Color(0xFF202125),
+                                      title: Text(
+                                        'Result is pending',
+                                        style: TextStyle(
+                                            color: CupertinoColors.white),
+                                      ),
+                                      actions: [
+                                        Center(
+                                          child: TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop(true);
+                                            },
+                                            child: Text('OK'),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  });
 
                           },
                           child: Text("Send Report", style: TextStyle(color: CupertinoColors.white))),

@@ -534,6 +534,39 @@ class _doctor_sign_upState extends State<patient_sign_up> {
                               );
                           } catch (e) {
                             print(e);
+                            setState(() {
+                              loading=false;
+                            });
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    backgroundColor: Color(
+                                        0XFF3E3F43),
+                                    elevation: 10,
+
+                                    //shadowColor: Colors.blue,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                      BorderRadius.circular(
+                                          25.0),
+                                    ),
+                                    title:
+                                    Text(
+                                      'Email or Password is invalid',style: TextStyle(color: CupertinoColors.white),),
+                                    content:   Text(
+                                      'Password should be at least 6 characters, 3 words and 3 letters',style: TextStyle(color: CupertinoColors.white),),
+
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text('Ok'),
+                                      ),
+                                    ],
+                                  );
+                                });
                           }
                         },
                         child:

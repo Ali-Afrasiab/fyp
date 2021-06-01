@@ -70,306 +70,36 @@ class _jarvisState extends State<jarvis> {
         backgroundColor: Color(0xFF202125),
       ),
       body: Container(
+
         child: Column(
           children: <Widget>[
-            data_gathered == true
-                ? Flexible(
-                    child: ListView.builder(
-                      reverse: true,
-                      itemCount: messsages.length,
-                      itemBuilder: (context, index) => chat(
-                          messsages[index]["message"].toString(),
-                          messsages[index]["data"]),
-                    ),
-                  )
-                : Flexible(
-                    child: ListView(
-                      reverse: true,
-                      children: [
-                        ///harresement :work place, street, schools, /physical violence:home parents, siblings, children's, husband/employee bullying boss
-                       RaisedButton(
-
-                         onPressed: (){
-                         setState(() {
-                           data_gathered=true;
-                         });
-                       },
-                         color: Colors.blue,
-                       child: Text('All Done!'),),
-                        Card(
-                          elevation: 8,
-                          //shadowColor: Colors.blue,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25.0),
-                          ),
-
-                          child: Column(
-                            children: [
-                              Text(
-                                'Do you have any issues with family?',
-                                style: TextStyle(fontWeight: FontWeight.w500),
+             Flexible(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage(
+                                  "assets/images/glacier.jpg"
                               ),
-                              Row(
-                                children: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: RaisedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              issues.add('parents');
-                                            });
-                                          },
-                                          color: issues.contains('parents')
-                                              ? Colors.blue
-                                              : Colors.grey,
-                                          child: Text(
-                                            'Parents',
-                                            style: TextStyle(
-                                                color: CupertinoColors.white),
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: RaisedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              issues.add('siblings');
-                                            });
-                                          },
-                                          color: issues.contains('siblings')
-                                              ? Colors.blue
-                                              : Colors.grey,
-                                          child: Text(
-                                            'Siblings',
-                                            style: TextStyle(
-                                                color: CupertinoColors.white),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: RaisedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              issues.add('children');
-                                            });
-                                          },
-                                          color: issues.contains('children')
-                                              ? Colors.blue
-                                              : Colors.grey,
-                                          child: Text(
-                                            'Children',
-                                            style: TextStyle(
-                                                color: CupertinoColors.white),
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: RaisedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              issues.add('husband/wife');
-                                            });
-                                          },
-                                          color: issues
-                                              .contains('husband/wife')
-                                              ? Colors.blue
-                                              : Colors.grey,
-                                          child: Text(
-                                            'Husband/Wife',
-                                            style: TextStyle(
-                                                color: CupertinoColors.white),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        Card(
-                          elevation: 8,
-                          //shadowColor: Colors.blue,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25.0),
-                          ),
+                              fit: BoxFit.cover
+                          )
+                      ),
+                      child: ListView.builder(
 
-                          child: Column(
-                            children: [
-                              Text(
-                                'Did you suffered any Harassment at?',
-                                style: TextStyle(fontWeight: FontWeight.w500),
-                              ),
-                              Row(
-                                children: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: RaisedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              issues.add('Work place');
-                                            });
-                                          },
-                                          color: issues.contains('Work place')
-                                              ? Colors.blue
-                                              : Colors.grey,
-                                          child: Text(
-                                            'Work place',
-                                            style: TextStyle(
-                                                color: CupertinoColors.white),
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: RaisedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              issues.add('street');
-                                            });
-                                          },
-                                          color: issues.contains('street')
-                                              ? Colors.blue
-                                              : Colors.grey,
-                                          child: Text(
-                                            'Street',
-                                            style: TextStyle(
-                                                color: CupertinoColors.white),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: RaisedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              issues.add('schools');
-                                            });
-                                          },
-                                          color: issues.contains('schools')
-                                              ? Colors.blue
-                                              : Colors.grey,
-                                          child: Text(
-                                            'School',
-                                            style: TextStyle(
-                                                color: CupertinoColors.white),
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: RaisedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              issues.add('physical violence');
-                                            });
-                                          },
-                                          color: issues
-                                                  .contains('physical violence')
-                                              ? Colors.blue
-                                              : Colors.grey,
-                                          child: Text(
-                                            'Physical violence',
-                                            style: TextStyle(
-                                                color: CupertinoColors.white),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-
-
-                        Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: CustomizableCupertinoDateTextBox(
-                            initialValue: DateTime.now(),
-                            hintText: "Date",
-                          ),
-                        ),
-                        Container(
-                          width: 100,
-                          height: 100,
-                          //   color: Colors.blue,
-                          child: Column(
-                            children: [
-                              Text('Kindly fill the following Information!'),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(15.0),
-                                    child: RaisedButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          gender = 'Male';
-                                        });
-                                      },
-                                      color: gender == 'Female'
-                                          ? Colors.grey
-                                          : Colors.blue,
-                                      child: Text(
-                                        'Male',
-                                        style: TextStyle(
-                                            color: CupertinoColors.white),
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(15.0),
-                                    child: RaisedButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          gender = 'Female';
-                                        });
-                                      },
-                                      color: gender == 'Male'
-                                          ? Colors.grey
-                                          : Colors.pink,
-                                      child: Text(
-                                        'Female',
-                                        style: TextStyle(
-                                            color: CupertinoColors.white),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                        reverse: true,
+                        itemCount: messsages.length,
+                        itemBuilder: (context, index) => chat(
+                            messsages[index]["message"].toString(),
+                            messsages[index]["data"]),
+                      ),
                     ),
                   ),
+
             Divider(
               height: 5.0,
               color: Color(0xFF202125),
             ),
             Container(
+
               padding: EdgeInsets.only(left: 15.0, right: 15.0),
               margin: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Row(
@@ -420,7 +150,7 @@ class _jarvisState extends State<jarvis> {
       padding: EdgeInsets.all(10.0),
       child: Bubble(
           radius: Radius.circular(15.0),
-          color: data == 0 ? Colors.deepOrange : Colors.orangeAccent,
+          color: data == 0 ? Colors.lightBlue.shade700 : Colors.blue,
           elevation: 0.0,
           alignment: data == 0 ? Alignment.topLeft : Alignment.topRight,
           nip: data == 0 ? BubbleNip.leftBottom : BubbleNip.rightTop,
