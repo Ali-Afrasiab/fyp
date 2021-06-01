@@ -49,10 +49,8 @@ String search='';
     return Scaffold(
       key: _scaffoldKey,
       drawer: loggedInUser.uid!=null?nav_drawer(doc_id: loggedInUser.uid,):nav_drawer(),
-
       appBar: new PreferredSize(
         child: new Container(
-
           padding: new EdgeInsets.only(top: MediaQuery.of(context).padding.top),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(1,10,1,10),
